@@ -16,5 +16,10 @@ def get_prices(ticker, period="3mo", interval="1d"):
         interval=interval,
         auto_adjust=True,
         multi_level_index=False,
+        progress=False,
     )
+
+    if df is None or df.empty or len(df.dropna()) == 0:
+        raise ValueError(f"No data found for '{ticker}'. It may not be a real ticker.")
+
     return df
