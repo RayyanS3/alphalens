@@ -23,3 +23,17 @@ def get_prices(ticker, period="3mo", interval="1d"):
         raise ValueError(f"No data found for '{ticker}'. It may not be a real ticker.")
 
     return df
+
+def get_news(ticker, limit=5):
+    raw_news = yf.Ticker(ticker).news
+    headlines = []
+    for item in raw_news[:limit]:
+        content = item.get("content", {})
+        headlines.append({
+            "title": content.get("title", ""),
+            "summary": content.get("summary", ""),
+            "publisher": content.get("provider", {}).get("displayName", ""),
+            "url": content.get("canonicalUrl", {}).get("url", ""),
+        })
+
+    return headlines

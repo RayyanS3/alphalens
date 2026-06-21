@@ -1,5 +1,5 @@
 import sys
-from src.data import get_prices
+from src.data import get_prices, get_news
 from src.analysis import add_moving_averages
 from src.llm import analyze_sentiment
 
@@ -11,7 +11,6 @@ def run(ticker):
         print(f"Error: {e}")
         return
     
-    df = get_prices(ticker)
     df = add_moving_averages(df)
 
     latest = df.iloc[-1]
@@ -20,11 +19,19 @@ def run(ticker):
     print(f"5-day MA:     {latest['MA5']:.2f}")
     print(f"20-day MA:    {latest['MA20']:.2f}")
 
-    headline = f"{ticker} reports record quarterly revenue, beating expectations."
-    sentiment = analyze_sentiment(headline)
-    print(f"\nHeadline: {headline}")
-    print(f"Sentiment:  {sentiment['sentiment']} ({sentiment['confidence']})")
-    print(f"Reasoning:  {sentiment['reasoning']}")
+    news = get_news(ticker)
+    if not news:
+        print("No news found.")
+        return
+    for item in news:
+        title = item.get("title")
+        if not title:
+            continue
+    
+    result = analyze_sentiment(title)
+    print(f"\n[{result['sentiment'].upper()}] {title}")
+    print(f"   Source: {item['publisher']}")
+    print(f"   Confidence: {result['confidence']} — {result['reasoning']}")
 
 
 if __name__ == "__main__":
