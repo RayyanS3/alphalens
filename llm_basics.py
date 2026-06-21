@@ -23,4 +23,4 @@ response = client.messages.create(
 )
 
 # 5. Print just the text of the reply
-print(response.content[0].text)
+print(response.content[0].text)∫ç
