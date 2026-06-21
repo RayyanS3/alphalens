@@ -1,25 +1,25 @@
-# main.py — AlphaLens entry point: ties the modules together
-
+import sys
 from src.data import get_prices
 from src.analysis import add_moving_averages
 from src.llm import analyze_sentiment
 
 
 def run(ticker):
-    # 1. Fetch price data
+    try:
+        df = get_prices(ticker)
+    except ValueError as e:
+        print(f"Error: {e}")
+        return
+    
     df = get_prices(ticker)
-
-    # 2. Compute indicators
     df = add_moving_averages(df)
 
-    # 3. Show the latest price picture
     latest = df.iloc[-1]
     print(f"--- {ticker} ---")
     print(f"Latest close: {latest['Close']:.2f}")
     print(f"5-day MA:     {latest['MA5']:.2f}")
     print(f"20-day MA:    {latest['MA20']:.2f}")
 
-    # 4. Run a sample sentiment analysis (placeholder headline for now)
     headline = f"{ticker} reports record quarterly revenue, beating expectations."
     sentiment = analyze_sentiment(headline)
     print(f"\nHeadline: {headline}")
@@ -28,4 +28,10 @@ def run(ticker):
 
 
 if __name__ == "__main__":
-    run("AAPL")
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <TICKER>")
+        print("Example: python main.py AAPL")
+        sys.exit(1)
+
+    ticker = sys.argv[1].upper()
+    run(ticker)

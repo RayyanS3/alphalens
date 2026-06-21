@@ -1,4 +1,4 @@
-# src/analysis.py — computing indicators on price data
+# computing indicators on price data
 
 def add_moving_averages(df):
     """Add 5-day and 20-day moving averages of the closing price."""

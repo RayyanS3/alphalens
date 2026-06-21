@@ -1,4 +1,4 @@
-# src/llm.py — talking to the LLM and parsing structured output
+# talking to the LLM and parsing structured output
 
 import os
 import json
