@@ -3,6 +3,7 @@ from src.sources.prices import get_prices
 from src.sources.news import get_news
 from src.analysis import add_moving_averages
 from src.llm import analyze_sentiment
+from src.sources.filings import get_filings
 
 
 def run(ticker):
@@ -34,6 +35,16 @@ def run(ticker):
     print(f"   Source: {item['publisher']}")
     print(f"   Confidence: {result['confidence']} — {result['reasoning']}")
 
+    print(f"\n--- Recent SEC Filings ---")
+    try:
+        filings = get_filings(ticker)
+        if not filings:
+            print("No recent filings found.")
+        else:
+            for f in filings:
+                print(f"[{f['form']}] {f['date']} — {f['url']}")
+    except ValueError as e:
+        print(f"Could not fetch filings: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

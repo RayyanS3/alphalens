@@ -1,14 +1,11 @@
-# src/sources/filings.py — SEC filings via EDGAR
 
 import requests
+from src.cache import cached
 
-# SEC requires a User-Agent identifying the requester
 SEC_HEADERS = {"User-Agent": "AlphaLens rayyan.suhail2001@gmail.com"}
-
-# Filing types worth analyzing (annual, quarterly, material events)
 USEFUL_FORMS = ["10-K", "10-Q", "8-K"]
 
-
+@cached(ttl=86400)
 def get_cik(ticker):
     """Look up a ticker's zero-padded 10-digit CIK from the SEC's mapping."""
     response = requests.get(
@@ -28,6 +25,7 @@ def get_cik(ticker):
     raise ValueError(f"No CIK found for ticker '{ticker}'.")
 
 
+@cached(ttl=86400)
 def get_filings(ticker, limit=5):
     """Fetch a company's recent important SEC filings (10-K, 10-Q, 8-K)."""
     cik = get_cik(ticker)

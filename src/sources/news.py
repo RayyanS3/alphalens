@@ -4,10 +4,11 @@ import os
 import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from src.cache import cached
 
 load_dotenv()
 
-
+@cached(ttl=1800)
 def get_news(ticker, limit=10, days_back=21):
     """Fetch recent company news for a ticker via Finnhub."""
     api_key = os.getenv("FINNHUB_KEY")
