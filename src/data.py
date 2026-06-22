@@ -4,7 +4,6 @@ import yfinance as yf
 import os
 import requests
 from dotenv import load_dotenv
-from yfinance import data
 from datetime import datetime, timedelta
 
 load_dotenv()
@@ -94,3 +93,24 @@ def get_news(ticker, limit=10, days_back=21):
             break
 
     return headlines
+
+SEC_HEADERS = {"User-Agent": "AlphaLens rayyan.suhail2001@gmail.com"}
+
+
+def get_cik(ticker):
+    response = requests.get(
+        "https://www.sec.gov/files/company_tickers.json",
+        headers=SEC_HEADERS,
+        timeout=10,
+    )
+    if response.status_code != 200:
+        raise ValueError(f"SEC ticker lookup failed: status {response.status_code}")
+
+    mapping = response.json()
+
+    for entry in mapping.values():
+        if entry.get("ticker", "").upper() == ticker.upper():
+            cik = entry["cik_str"]
+            return str(cik).zfill(10)
+
+    raise ValueError(f"No CIK found for ticker '{ticker}'.")
