@@ -1,5 +1,6 @@
 import sys
-from src.data import get_prices, get_news
+from src.sources.prices import get_prices
+from src.sources.news import get_news
 from src.analysis import add_moving_averages
 from src.llm import analyze_sentiment
 
