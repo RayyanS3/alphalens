@@ -1,7 +1,7 @@
-# computing indicators on price data
+import pandas as pd
 
-def add_moving_averages(df):
-    """Add 5-day and 20-day moving averages of the closing price."""
+
+def add_moving_averages(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["MA5"] = df["Close"].rolling(window=5).mean()
     df["MA20"] = df["Close"].rolling(window=20).mean()

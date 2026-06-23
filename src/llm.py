@@ -1,16 +1,15 @@
-# talking to the LLM and parsing structured output
-
 import os
 import json
 from dotenv import load_dotenv
 from anthropic import Anthropic
 
+
 load_dotenv()
+
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 
-def extract_json(text):
-    """Strip markdown code fences if the model wrapped its JSON in them."""
+def extract_json(text: str) -> str:
     text = text.strip()
     if text.startswith("```"):
         lines = text.split("\n")
@@ -21,8 +20,7 @@ def extract_json(text):
     return text
 
 
-def analyze_sentiment(headline):
-    """Send a headline to the LLM and return structured sentiment as a dict."""
+def analyze_sentiment(headline: str) -> dict:
     prompt = f"""Analyze the sentiment of this financial headline for a stock investor.
 
 Headline: "{headline}"

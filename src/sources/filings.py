@@ -2,14 +2,17 @@
 import requests
 from src.cache import cached
 
+
 SEC_HEADERS = {"User-Agent": "AlphaLens rayyan.suhail2001@gmail.com"}
 USEFUL_FORMS = ["10-K", "10-Q", "8-K"]
+SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
+SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
+
 
 @cached(ttl=86400)
-def get_cik(ticker):
-    """Look up a ticker's zero-padded 10-digit CIK from the SEC's mapping."""
+def get_cik(ticker: str) -> str:
     response = requests.get(
-        "https://www.sec.gov/files/company_tickers.json",
+        SEC_TICKERS_URL,
         headers=SEC_HEADERS,
         timeout=10,
     )
@@ -26,12 +29,11 @@ def get_cik(ticker):
 
 
 @cached(ttl=86400)
-def get_filings(ticker, limit=5):
-    """Fetch a company's recent important SEC filings (10-K, 10-Q, 8-K)."""
+def get_filings(ticker: str, limit: int = 5) -> list[dict]:
     cik = get_cik(ticker)
 
     response = requests.get(
-        f"https://data.sec.gov/submissions/CIK{cik}.json",
+        SEC_SUBMISSIONS_URL.format(cik=cik),
         headers=SEC_HEADERS,
         timeout=10,
     )

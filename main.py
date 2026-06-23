@@ -46,6 +46,7 @@ def run(ticker):
     except ValueError as e:
         print(f"Could not fetch filings: {e}")
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python main.py <TICKER>")
