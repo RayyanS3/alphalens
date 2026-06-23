@@ -1,6 +1,7 @@
 
 import requests
 from src.cache import cached
+from bs4 import BeautifulSoup
 
 
 SEC_HEADERS = {"User-Agent": "AlphaLens rayyan.suhail2001@gmail.com"}
@@ -69,3 +70,19 @@ def get_filings(ticker: str, limit: int = 5) -> list[dict]:
             break
 
     return filings
+
+def get_filing_text(url: str, max_chars: int = 50000) -> str:
+    response = requests.get(url, headers=SEC_HEADERS, timeout=20)
+    if response.status_code != 200:
+        raise ValueError(f"Could not fetch filing: status {response.status_code}")
+
+    soup = BeautifulSoup(response.text, "lxml")
+
+    for tag in soup(["script", "style", "head", "title", "meta"]):
+        tag.decompose()
+
+    text = soup.get_text(separator=" ", strip=True)
+
+    text = " ".join(text.split())
+
+    return text[:max_chars]
