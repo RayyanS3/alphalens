@@ -2,7 +2,9 @@
 import requests
 from src.cache import cached
 from bs4 import BeautifulSoup
+from edgar import set_identity, Company
 
+set_identity("rayyan.suhail2001@gmail.com")
 
 SEC_HEADERS = {"User-Agent": "AlphaLens rayyan.suhail2001@gmail.com"}
 USEFUL_FORMS = ["10-K", "10-Q", "8-K"]
@@ -71,17 +73,13 @@ def get_filings(ticker: str, limit: int = 5) -> list[dict]:
 
     return filings
 
-def get_filing_text(url: str, max_chars: int = 50000) -> str:
-    response = requests.get(url, headers=SEC_HEADERS, timeout=20)
-    if response.status_code != 200:
-        raise ValueError(f"Could not fetch filing: status {response.status_code}")
+def get_filing_text(ticker: str, form: str = "10-Q", max_chars: int = 50000) -> str:
+    company = Company(ticker)
+    filing = company.get_filings(form=form).latest(1)
+    if filing is None:
+        raise ValueError(f"No {form} filing found for {ticker}.")
 
-    soup = BeautifulSoup(response.text, "lxml")
-
-    for tag in soup(["script", "style", "head", "title", "meta"]):
-        tag.decompose()
-
-    text = soup.get_text(separator=" ", strip=True)
+    text = filing.text()
 
     text = " ".join(text.split())
 
