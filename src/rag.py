@@ -1,6 +1,7 @@
 from __future__ import annotations
 import chromadb
 from src.embeddings import embed_texts, embed_query
+from src.llm import client   
 
 _chroma_client = chromadb.PersistentClient(path="data/chroma")
 
@@ -44,3 +45,28 @@ def retrieve(ticker: str, query: str, n_results: int = 5) -> list[str]:
     )
 
     return results["documents"][0]
+
+
+def answer_question(ticker: str, question: str, n_results: int = 5) -> str:
+    chunks = retrieve(ticker, question, n_results=n_results)
+    if not chunks:
+        return "No relevant information found."
+
+    context = "\n\n---\n\n".join(chunks)
+
+    prompt = f"""You are a financial analyst. Answer the question using ONLY the context below, which comes from {ticker}'s SEC filings. If the context doesn't contain the answer, say so.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:"""
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=500,
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    return response.content[0].text
