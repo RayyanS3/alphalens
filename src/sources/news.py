@@ -1,44 +1,78 @@
-import os
-import requests
+"""Company news retrieval via the Finnhub API.
+
+Fetches recent ticker-tagged news, deduplicates by headline, and normalizes
+each article into a consistent dict shape used throughout the pipeline.
+Results are cached on disk (see src.cache) to avoid redundant API calls.
+"""
+from __future__ import annotations
+
+import logging
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
+
+import requests
+
 from src.cache import cached
+from src.config import (
+    FINNHUB_KEY,
+    FINNHUB_NEWS_URL,
+    NEWS_DAYS_BACK,
+    NEWS_LIMIT,
+    CACHE_TTL_NEWS,
+)
+
+logger = logging.getLogger(__name__)
+
+_HTTP_TIMEOUT = 10
 
 
-load_dotenv()
+@cached(ttl=CACHE_TTL_NEWS)
+def get_news(
+    ticker: str,
+    limit: int = NEWS_LIMIT,
+    days_back: int = NEWS_DAYS_BACK,
+) -> list[dict]:
+    """Fetch recent, deduplicated company news for a ticker via Finnhub.
 
-FINNHUB_NEWS_URL = "https://finnhub.io/api/v1/company-news"
+    Args:
+        ticker: The stock ticker symbol (e.g. "AAPL").
+        limit: Maximum number of articles to return.
+        days_back: How many days of history to request.
 
+    Returns:
+        A list of normalized article dicts, each with keys: title, summary,
+        content, publisher, url, published, category, related.
 
-@cached(ttl=1800)
-def get_news(ticker: str, limit: int = 10, days_back: int = 21) -> list[dict]:
-    api_key = os.getenv("FINNHUB_KEY")
-    if not api_key:
+    Raises:
+        ValueError: If the Finnhub key is missing or the API returns an error.
+    """
+    if not FINNHUB_KEY:
         raise ValueError("FINNHUB_KEY not found in environment.")
 
     today = datetime.now()
-    start = today - timedelta(days=days_back)
-    date_from = start.strftime("%Y-%m-%d")
+    date_from = (today - timedelta(days=days_back)).strftime("%Y-%m-%d")
     date_to = today.strftime("%Y-%m-%d")
 
-    response = requests.get(
-        FINNHUB_NEWS_URL,
-        params={
-            "symbol": ticker,
-            "from": date_from,
-            "to": date_to,
-            "token": api_key,
-        },
-        timeout=10,
-    )
+    try:
+        response = requests.get(
+            FINNHUB_NEWS_URL,
+            params={
+                "symbol": ticker,
+                "from": date_from,
+                "to": date_to,
+                "token": FINNHUB_KEY,
+            },
+            timeout=_HTTP_TIMEOUT,
+        )
+    except requests.RequestException as e:
+        raise ValueError(f"Finnhub request failed for {ticker}: {e}") from e
 
     if response.status_code != 200:
-        raise ValueError(f"Finnhub error: status {response.status_code}")
+        raise ValueError(f"Finnhub error for {ticker}: status {response.status_code}")
 
     raw_articles = response.json()
 
-    headlines = []
-    seen_titles = set()
+    headlines: list[dict] = []
+    seen_titles: set[str] = set()
 
     for article in raw_articles:
         title = article.get("headline", "") or ""
@@ -63,4 +97,5 @@ def get_news(ticker: str, limit: int = 10, days_back: int = 21) -> list[dict]:
         if len(headlines) >= limit:
             break
 
+    logger.info("Fetched %d news articles for %s", len(headlines), ticker)
     return headlines
