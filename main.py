@@ -1,50 +1,33 @@
 import sys
 from src.sources.prices import get_prices
-from src.sources.news import get_news
 from src.analysis import add_moving_averages
-from src.llm import analyze_sentiment
-from src.sources.filings import get_filings
+from src.rag import ensure_store, answer_question
 
 
-def run(ticker):
+def run(ticker: str) -> None:
     try:
-        df = get_prices(ticker)
+        df = add_moving_averages(get_prices(ticker))
+        latest = df.iloc[-1]
+        print(f"--- {ticker} ---")
+        print(f"Latest close: {latest['Close']:.2f}")
+        print(f"5-day MA:     {latest['MA5']:.2f}")
+        print(f"20-day MA:    {latest['MA20']:.2f}")
     except ValueError as e:
-        print(f"Error: {e}")
-        return
-    
-    df = add_moving_averages(df)
+        print(f"Price data unavailable: {e}")
 
-    latest = df.iloc[-1]
-    print(f"--- {ticker} ---")
-    print(f"Latest close: {latest['Close']:.2f}")
-    print(f"5-day MA:     {latest['MA5']:.2f}")
-    print(f"20-day MA:    {latest['MA20']:.2f}")
+    print(f"\nPreparing research data for {ticker}...")
+    chunk_count = ensure_store(ticker)
+    print(f"Knowledge base ready ({chunk_count} chunks).")
 
-    news = get_news(ticker)
-    if not news:
-        print("No news found.")
-        return
-    for item in news:
-        title = item.get("title")
-        if not title:
-            continue
-    
-    result = analyze_sentiment(title)
-    print(f"\n[{result['sentiment'].upper()}] {title}")
-    print(f"   Source: {item['publisher']}")
-    print(f"   Confidence: {result['confidence']} — {result['reasoning']}")
+    questions = [
+        "What are the key risks and challenges facing the company?",
+        "What is the recent news and sentiment around the company?",
+    ]
 
-    print(f"\n--- Recent SEC Filings ---")
-    try:
-        filings = get_filings(ticker)
-        if not filings:
-            print("No recent filings found.")
-        else:
-            for f in filings:
-                print(f"[{f['form']}] {f['date']} — {f['url']}")
-    except ValueError as e:
-        print(f"Could not fetch filings: {e}")
+    for question in questions:
+        print(f"\n=== {question} ===")
+        answer = answer_question(ticker, question)
+        print(answer)
 
 
 if __name__ == "__main__":
