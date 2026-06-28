@@ -1,14 +1,6 @@
-"""SEC filings retrieval via EDGAR.
-
-Resolves tickers to CIK identifiers, lists a company's recent material
-filings (10-K, 10-Q, 8-K), and extracts clean text from the latest filing
-of a given form using the edgartools library. Network results are cached
-on disk (see src.cache).
-"""
 from __future__ import annotations
 
 import logging
-
 import requests
 from edgar import set_identity, Company
 
@@ -28,24 +20,11 @@ logger = logging.getLogger(__name__)
 _HTTP_TIMEOUT = 15
 _SEC_HEADERS = {"User-Agent": SEC_USER_AGENT}
 _ARCHIVE_URL = "https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
-
-# edgartools requires identifying the requester to the SEC (once, at import).
 set_identity(SEC_USER_AGENT)
 
 
 @cached(ttl=CACHE_TTL_FILINGS)
 def get_cik(ticker: str) -> str:
-    """Look up a ticker's zero-padded 10-digit CIK from the SEC mapping.
-
-    Args:
-        ticker: The stock ticker symbol (e.g. "AAPL").
-
-    Returns:
-        The CIK as a 10-digit zero-padded string (e.g. "0000320193").
-
-    Raises:
-        ValueError: If the SEC request fails or no CIK matches the ticker.
-    """
     try:
         response = requests.get(SEC_TICKERS_URL, headers=_SEC_HEADERS, timeout=_HTTP_TIMEOUT)
     except requests.RequestException as e:
@@ -64,18 +43,6 @@ def get_cik(ticker: str) -> str:
 
 @cached(ttl=CACHE_TTL_FILINGS)
 def get_filings(ticker: str, limit: int = FILINGS_LIMIT) -> list[dict]:
-    """Fetch a company's recent material SEC filings (10-K, 10-Q, 8-K).
-
-    Args:
-        ticker: The stock ticker symbol.
-        limit: Maximum number of filings to return.
-
-    Returns:
-        A list of dicts, each with keys: form, date, url.
-
-    Raises:
-        ValueError: If the SEC request fails.
-    """
     cik = get_cik(ticker)
 
     try:
@@ -118,19 +85,6 @@ def get_filings(ticker: str, limit: int = FILINGS_LIMIT) -> list[dict]:
 
 
 def get_filing_text(ticker: str, form: str = "10-Q", max_chars: int = FILING_MAX_CHARS) -> str:
-    """Extract clean text from a company's latest filing of a given form.
-
-    Args:
-        ticker: The stock ticker symbol.
-        form: The filing form type (e.g. "10-Q", "10-K").
-        max_chars: Maximum number of characters of text to return.
-
-    Returns:
-        Cleaned, whitespace-normalized filing text, truncated to max_chars.
-
-    Raises:
-        ValueError: If no filing of the requested form is found.
-    """
     company = Company(ticker)
     filing = company.get_filings(form=form).latest(1)
     if filing is None:

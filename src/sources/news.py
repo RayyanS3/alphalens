@@ -1,16 +1,8 @@
-"""Company news retrieval via the Finnhub API.
-
-Fetches recent ticker-tagged news, deduplicates by headline, and normalizes
-each article into a consistent dict shape used throughout the pipeline.
-Results are cached on disk (see src.cache) to avoid redundant API calls.
-"""
 from __future__ import annotations
-
-import logging
 from datetime import datetime, timedelta
+import logging
 
 import requests
-
 from src.cache import cached
 from src.config import (
     FINNHUB_KEY,
@@ -21,30 +13,10 @@ from src.config import (
 )
 
 logger = logging.getLogger(__name__)
-
 _HTTP_TIMEOUT = 10
 
-
 @cached(ttl=CACHE_TTL_NEWS)
-def get_news(
-    ticker: str,
-    limit: int = NEWS_LIMIT,
-    days_back: int = NEWS_DAYS_BACK,
-) -> list[dict]:
-    """Fetch recent, deduplicated company news for a ticker via Finnhub.
-
-    Args:
-        ticker: The stock ticker symbol (e.g. "AAPL").
-        limit: Maximum number of articles to return.
-        days_back: How many days of history to request.
-
-    Returns:
-        A list of normalized article dicts, each with keys: title, summary,
-        content, publisher, url, published, category, related.
-
-    Raises:
-        ValueError: If the Finnhub key is missing or the API returns an error.
-    """
+def get_news(ticker: str, limit: int = NEWS_LIMIT, days_back: int = NEWS_DAYS_BACK,) -> list[dict]:
     if not FINNHUB_KEY:
         raise ValueError("FINNHUB_KEY not found in environment.")
 

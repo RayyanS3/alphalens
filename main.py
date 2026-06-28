@@ -1,17 +1,10 @@
-"""AlphaLens command-line entry point.
-
-Runs the full analysis pipeline for a ticker: a price snapshot, building or
-reusing the RAG knowledge base, and generating grounded answers to a set of
-research questions. Run with: python main.py <TICKER>
-"""
-from __future__ import annotations
-
-import sys
-
-from src.logging_config import setup_logging
 from src.sources.prices import get_prices
 from src.analysis import add_moving_averages
 from src.rag import ensure_store, answer_question
+
+from src.logging_config import setup_logging
+from __future__ import annotations
+import sys
 
 RESEARCH_QUESTIONS = [
     "What are the key risks and challenges facing the company?",
@@ -20,11 +13,6 @@ RESEARCH_QUESTIONS = [
 
 
 def print_price_snapshot(ticker: str) -> None:
-    """Print a short price and moving-average snapshot for a ticker.
-
-    Args:
-        ticker: The stock ticker symbol.
-    """
     try:
         df = add_moving_averages(get_prices(ticker))
     except (ValueError, KeyError) as e:
@@ -39,11 +27,6 @@ def print_price_snapshot(ticker: str) -> None:
 
 
 def run(ticker: str) -> None:
-    """Run the full AlphaLens analysis pipeline for a ticker.
-
-    Args:
-        ticker: The stock ticker symbol (e.g. "AAPL").
-    """
     print_price_snapshot(ticker)
 
     print(f"\nPreparing research data for {ticker}...")
@@ -56,7 +39,6 @@ def run(ticker: str) -> None:
 
 
 def main() -> None:
-    """Parse command-line arguments and run the pipeline."""
     setup_logging()
 
     if len(sys.argv) < 2:

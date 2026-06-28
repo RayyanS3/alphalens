@@ -1,16 +1,8 @@
-"""Centralized configuration for AlphaLens.
-
-All tunable settings, model names, and external endpoints live here so they
-can be found and changed in one place rather than scattered across modules.
-Secrets (API keys) are NOT stored here — they are read from the environment.
-"""
 from __future__ import annotations
-
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
-
 
 # --- API keys (read from environment, never hardcoded) ---
 ANTHROPIC_API_KEY: str | None = os.getenv("ANTHROPIC_API_KEY")
