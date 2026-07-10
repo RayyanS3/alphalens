@@ -49,7 +49,6 @@ alphalens/
 │   ├── analysis.py      # Technical indicators
 │   ├── rag.py           # Chunking, retrieval, generation
 │   └── sources/         # prices.py · news.py · filings.py
-└── tests/
 ```
 
 Built with centralized config, structured logging, type hints, specific exception handling, disk caching, and swappable data sources behind stable interfaces.
