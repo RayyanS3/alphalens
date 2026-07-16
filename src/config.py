@@ -22,7 +22,6 @@ LLM_MAX_TOKENS: int = 500
 # --- Data source settings ---
 NEWS_DAYS_BACK: int = 21
 NEWS_LIMIT: int = 10
-FILINGS_LIMIT: int = 5
 FILING_MAX_CHARS: int = 50_000
 
 # --- RAG settings ---
@@ -34,14 +33,9 @@ EMBED_BATCH_SIZE: int = 50
 # --- Cache settings (seconds) ---
 CACHE_DIR: str = "data/cache"
 CACHE_TTL_NEWS: int = 1_800       # 30 minutes
-CACHE_TTL_FILINGS: int = 86_400   # 24 hours
 
 # --- Storage ---
 CHROMA_DIR: str = "data/chroma"
 
 # --- External endpoints ---
 FINNHUB_NEWS_URL: str = "https://finnhub.io/api/v1/company-news"
-SEC_TICKERS_URL: str = "https://www.sec.gov/files/company_tickers.json"
-SEC_SUBMISSIONS_URL: str = "https://data.sec.gov/submissions/CIK{cik}.json"
-
-USEFUL_FORMS: list[str] = ["10-K", "10-Q", "8-K"]
