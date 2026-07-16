@@ -30,13 +30,3 @@ def get_prices(ticker: str, period: str = "3mo", interval: str = "1d") -> pd.Dat
         raise ValueError(f"No price data found for '{ticker}'. It may not be a real ticker.")
 
     return df
-
-
-def get_company_name(ticker: str) -> str:
-    try:
-        info = yf.Ticker(ticker).info
-    except (KeyError, ValueError, ConnectionError) as e:
-        logger.warning("Could not resolve company name for %s: %s", ticker, e)
-        return ticker
-
-    return info.get("shortName") or info.get("longName") or ticker

@@ -1,9 +1,9 @@
+from __future__ import annotations
 from src.sources.prices import get_prices
 from src.analysis import add_moving_averages
 from src.rag import ensure_store, answer_question
 
 from src.logging_config import setup_logging
-from __future__ import annotations
 import sys
 
 RESEARCH_QUESTIONS = [
