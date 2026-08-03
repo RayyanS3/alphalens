@@ -35,7 +35,17 @@ def run(ticker: str) -> None:
 
     for question in RESEARCH_QUESTIONS:
         print(f"\n=== {question} ===")
-        print(answer_question(ticker, question))
+        answer, evidence = answer_question(ticker, question)
+        print(answer)
+
+        if evidence:
+            print("\nSources:")
+            for item in evidence:
+                meta = item.metadata
+                label = meta.get("filing_form") or meta.get("publisher") or meta.get("source_type", "source")
+                date = (meta.get("published_at") or "")[:10]
+                url = meta.get("url", "")
+                print(f"  [{item.evidence_id}] {label} {date} {url}")
 
 
 def main() -> None:
