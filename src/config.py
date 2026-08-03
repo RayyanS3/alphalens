@@ -22,7 +22,7 @@ LLM_MAX_TOKENS: int = 500
 # --- Data source settings ---
 NEWS_DAYS_BACK: int = 21
 NEWS_LIMIT: int = 10
-FILING_MAX_CHARS: int = 50_000
+FILING_MAX_CHARS: int = 400_000
 
 # --- RAG settings ---
 CHUNK_SIZE: int = 800
