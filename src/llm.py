@@ -1,4 +1,5 @@
 from __future__ import annotations
+import functools
 import json
 import logging
 
@@ -6,7 +7,11 @@ from anthropic import Anthropic
 from src.config import ANTHROPIC_API_KEY, LLM_MODEL, LLM_MAX_TOKENS
 
 logger = logging.getLogger(__name__)
-client = Anthropic(api_key=ANTHROPIC_API_KEY)
+
+@functools.lru_cache(maxsize=1)
+def get_client() -> Anthropic:
+    """Return the shared Anthropic client, created on first use."""
+    return Anthropic(api_key=ANTHROPIC_API_KEY)
 
 def extract_json(text: str) -> str:
     text = text.strip()
@@ -30,7 +35,7 @@ def analyze_sentiment(headline: str) -> dict:
     "reasoning": "<one short sentence>"
     }}"""
 
-    response = client.messages.create(
+    response = get_client().messages.create(
         model=LLM_MODEL,
         max_tokens=LLM_MAX_TOKENS,
         messages=[{"role": "user", "content": prompt}],

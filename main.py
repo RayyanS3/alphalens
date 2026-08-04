@@ -3,6 +3,7 @@ import argparse
 from curses import meta
 
 from PIL.Image import item
+from src.config import validate_config
 from src.sources.prices import get_prices
 from src.analysis import add_moving_averages
 from src.rag import ensure_store, answer_question
@@ -60,6 +61,12 @@ def run(ticker: str, rebuild: bool = False) -> None:
 
 def main() -> None:
     setup_logging()
+
+    try:
+        validate_config()
+    except RuntimeError as e:
+        print(f"Configuration error: {e}")
+        sys.exit(1)
 
     parser = argparse.ArgumentParser(description="AlphaLens equity research.")
     parser.add_argument("ticker", help="Stock ticker symbol, e.g. AAPL")

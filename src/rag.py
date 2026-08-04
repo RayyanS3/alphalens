@@ -21,7 +21,7 @@ from src.config import (
     LLM_MAX_TOKENS,
 )
 from src.embeddings import embed_texts, embed_query
-from src.llm import client
+from src.llm import get_client
 from src.models import (
     DocumentChunk,
     RetrievedEvidence,
@@ -230,7 +230,7 @@ Question: {question}
 
 Answer:"""
 
-    response = client.messages.create(
+    response = get_client().messages.create(
         model=LLM_MODEL,
         max_tokens=LLM_MAX_TOKENS,
         messages=[{"role": "user", "content": prompt}],
