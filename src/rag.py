@@ -5,6 +5,8 @@ ChromaDB collection with full source metadata, retrieves the most relevant
 chunks as labelled evidence, and generates answers grounded in that evidence.
 """
 from __future__ import annotations
+from datetime import datetime
+from src.manifest import build_manifest, load_manifest, save_manifest, rebuild_reason
 
 import logging
 
@@ -101,33 +103,44 @@ def build_store(ticker: str, chunks: list[DocumentChunk]) -> None:
 
 
 def build_full_store(ticker: str) -> int:
-    """Ingest a ticker's filings and news into its ChromaDB collection.
-
-    Each source fails independently: if one is unavailable, the other is
-    still ingested.
-
-    Returns:
-        The number of chunks stored.
-    """
+    """Ingest a ticker's filings and news, then record an ingestion manifest."""
     chunks: list[DocumentChunk] = []
+    document_ids: list[str] = []
+    accessions: list[str] = []
+    news_dates: list[datetime] = []
 
     try:
         for document in get_filing_documents(ticker):
             chunks.extend(chunk_document(document))
+            document_ids.append(document.document_id)
+            if document.accession_number:
+                accessions.append(document.accession_number)
     except ValueError as e:
         logger.warning("No filing documents for %s: %s", ticker, e)
 
     try:
         for document in get_news_documents(ticker):
             chunks.extend(chunk_document(document))
+            document_ids.append(document.document_id)
+            if document.published_at:
+                news_dates.append(document.published_at)
     except ValueError as e:
         logger.warning("No news documents for %s: %s", ticker, e)
 
-    if chunks:
-        build_store(ticker, chunks)
-    else:
+    if not chunks:
         logger.warning("No documents could be ingested for %s.", ticker)
+        return 0
 
+    build_store(ticker, chunks)
+    save_manifest(
+        build_manifest(
+            ticker=ticker,
+            chunk_count=len(chunks),
+            document_ids=document_ids,
+            accession_numbers=sorted(set(accessions)),
+            latest_news_at=max(news_dates) if news_dates else None,
+        )
+    )
     return len(chunks)
 
 
@@ -232,19 +245,32 @@ def store_exists(ticker: str) -> bool:
     return collection.count() > 0
 
 
-def ensure_store(ticker: str, rebuild: bool = False) -> int:
-    """Build the ticker's store if needed, reusing it otherwise."""
+def ensure_store(ticker: str, rebuild: bool = False) -> tuple[int, IngestionManifest | None]:
+    """Ensure a ticker's store is present, current, and pipeline-compatible.
+
+    Rebuilds when forced, when no valid manifest exists, when the store has
+    aged past its maximum, or when pipeline settings have changed since it
+    was built.
+
+    Returns:
+        A tuple of (chunk count, the manifest describing the store).
+    """
     name = _collection_name(ticker)
+    manifest = load_manifest(ticker)
     collection = _chroma_client.get_or_create_collection(name=name)
 
-    if rebuild:
-        logger.info("Rebuilding store for %s.", ticker)
+    reason = "forced rebuild" if rebuild else rebuild_reason(manifest)
+    if reason is None and collection.count() == 0:
+        reason = "collection is empty"
+
+    if reason:
+        logger.info("Rebuilding store for %s: %s.", ticker, reason)
         _chroma_client.delete_collection(name=name)
-        return build_full_store(ticker)
+        count = build_full_store(ticker)
+        return count, load_manifest(ticker)
 
-    count = collection.count()
-    if count == 0:
-        return build_full_store(ticker)
-
-    logger.info("Reusing existing store for %s (%d chunks).", ticker, count)
-    return count
+    logger.info(
+        "Reusing store for %s (%d chunks, %.1fh old).",
+        ticker, manifest.chunk_count, manifest.age_hours(),
+    )
+    return manifest.chunk_count, manifest

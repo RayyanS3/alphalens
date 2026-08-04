@@ -1,4 +1,5 @@
 from __future__ import annotations
+import argparse
 from curses import meta
 
 from PIL.Image import item
@@ -29,12 +30,18 @@ def print_price_snapshot(ticker: str) -> None:
     print(f"20-day MA:    {latest['MA20']:.2f}")
 
 
-def run(ticker: str) -> None:
+def run(ticker: str, rebuild: bool = False) -> None:
     print_price_snapshot(ticker)
 
     print(f"\nPreparing research data for {ticker}...")
-    chunk_count = ensure_store(ticker)
-    print(f"Knowledge base ready ({chunk_count} chunks).")
+    chunk_count, manifest = ensure_store(ticker, rebuild=rebuild)
+
+    if manifest:
+        print(f"Knowledge base: {chunk_count} chunks, updated {manifest.age_hours():.1f}h ago.")
+        if manifest.latest_news_at:
+            print(f"News through: {manifest.latest_news_at[:10]}")
+    else:
+        print(f"Knowledge base ready ({chunk_count} chunks).")
 
     for question in RESEARCH_QUESTIONS:
         print(f"\n=== {question} ===") 
@@ -54,12 +61,12 @@ def run(ticker: str) -> None:
 def main() -> None:
     setup_logging()
 
-    if len(sys.argv) < 2:
-        print("Usage: python main.py <TICKER>")
-        print("Example: python main.py AAPL")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="AlphaLens equity research.")
+    parser.add_argument("ticker", help="Stock ticker symbol, e.g. AAPL")
+    parser.add_argument("--rebuild", action="store_true", help="Force a full rebuild of the knowledge base")
+    args = parser.parse_args()
 
-    run(sys.argv[1].upper())
+    run(args.ticker.upper(), rebuild=args.rebuild)
 
 
 if __name__ == "__main__":

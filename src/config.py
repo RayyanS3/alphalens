@@ -34,8 +34,13 @@ EMBED_BATCH_SIZE: int = 50
 CACHE_DIR: str = "data/cache"
 CACHE_TTL_NEWS: int = 1_800       # 30 minutes
 
+# --- Pipeline versioning ---
+PIPELINE_VERSION: str = "2"
+
 # --- Storage ---
 CHROMA_DIR: str = "data/chroma"
+MANIFEST_DIR: str = "data/manifests"
+STORE_MAX_AGE_HOURS: int = 24
 
 # --- External endpoints ---
 FINNHUB_NEWS_URL: str = "https://finnhub.io/api/v1/company-news"
