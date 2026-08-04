@@ -1,4 +1,7 @@
 from __future__ import annotations
+from curses import meta
+
+from PIL.Image import item
 from src.sources.prices import get_prices
 from src.analysis import add_moving_averages
 from src.rag import ensure_store, answer_question
@@ -34,7 +37,7 @@ def run(ticker: str) -> None:
     print(f"Knowledge base ready ({chunk_count} chunks).")
 
     for question in RESEARCH_QUESTIONS:
-        print(f"\n=== {question} ===")
+        print(f"\n=== {question} ===") 
         answer, evidence = answer_question(ticker, question)
         print(answer)
 
@@ -42,11 +45,11 @@ def run(ticker: str) -> None:
             print("\nSources:")
             for item in evidence:
                 meta = item.metadata
-                label = meta.get("filing_form") or meta.get("publisher") or meta.get("source_type", "source")
+                label = meta.get("section") or meta.get("publisher") or meta.get("source_type", "source")
+                form = meta.get("filing_form", "")
                 date = (meta.get("published_at") or "")[:10]
                 url = meta.get("url", "")
-                print(f"  [{item.evidence_id}] {label} {date} {url}")
-
+                print(f"  [{item.evidence_id}] {form} {label} {date} {url}".strip())
 
 def main() -> None:
     setup_logging()

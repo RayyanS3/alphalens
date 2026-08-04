@@ -11,12 +11,16 @@ def embed_texts(texts: list[str], input_type: str = "document", batch_size: int 
         return []
 
     all_vectors: list[list[float]] = []
+    total_batches = -(-len(texts) // batch_size)
+
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
+        batch_num = i // batch_size + 1
+        logger.info("Embedding batch %d/%d (%d texts)...", batch_num, total_batches, len(batch))
         result = _client.embed(batch, model=EMBED_MODEL, input_type=input_type)
         all_vectors.extend(result.embeddings)
 
-    logger.info("Embedded %d texts in %d batch(es).", len(texts), -(-len(texts) // batch_size))
+    logger.info("Embedded %d texts in %d batch(es).", len(texts), total_batches)
     return all_vectors
 
 
