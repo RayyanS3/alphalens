@@ -6,7 +6,7 @@ chunks as labelled evidence, and generates answers grounded in that evidence.
 """
 from __future__ import annotations
 from datetime import datetime
-from src.manifest import build_manifest, load_manifest, save_manifest, rebuild_reason
+from src.manifest import IngestionManifest, build_manifest, load_manifest, save_manifest, rebuild_reason
 
 import logging
 
