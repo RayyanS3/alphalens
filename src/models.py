@@ -75,13 +75,16 @@ class RetrievedEvidence:
 
     @property
     def citation_label(self) -> str:
-        """A short human-readable source label, e.g. '10-Q, 2026-05-01'."""
-        source_type = self.metadata.get("source_type", "unknown")
-        if source_type == "filing":
-            parts = [self.metadata.get("filing_form"), self.metadata.get("section")]
+        """A short human-readable source label, e.g. '10-Q Risk Factors 2026-07-31'."""
+        meta = self.metadata
+        if meta.get("source_type") == "filing":
+            parts = [meta.get("filing_form"), meta.get("section")]
         else:
-            parts = [self.metadata.get("publisher"), self.metadata.get("published_at", "")[:10] or None]
-        return ", ".join(p for p in parts if p) or source_type
+            parts = [meta.get("publisher")]
+
+        date = (meta.get("published_at") or "")[:10]
+        parts.append(date or None)
+        return " ".join(p for p in parts if p)
 
 
 def make_document_id(ticker: str, source_type: str, natural_key: str) -> str:

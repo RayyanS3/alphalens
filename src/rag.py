@@ -7,9 +7,12 @@ chunks as labelled evidence, and generates answers grounded in that evidence.
 from __future__ import annotations
 
 import logging
+import re
 from datetime import datetime
 
 import chromadb
+
+_CITATION_PATTERN = re.compile(r"\[E(\d+)\]")
 
 from src.config import (
     CHROMA_DIR,
@@ -274,13 +277,18 @@ Answer:"""
         )
         answer += "\n\n*[Answer truncated — response exceeded the configured length limit.]*"
 
-    return answer, evidence
+    valid, invalid = verify_citations(answer, evidence)
 
+    if invalid:
+        logger.error(
+            "Model cited unsupplied evidence IDs %s for %s: %r",
+            sorted(invalid), ticker, question,
+        )
+    if not valid:
+        logger.warning("Answer contains no citations for %s: %r", ticker, question)
 
-def store_exists(ticker: str) -> bool:
-    """Return True if the ticker already has stored chunks."""
-    collection = _chroma_client.get_or_create_collection(name=_collection_name(ticker))
-    return collection.count() > 0
+    cited_evidence = [ev for ev in evidence if ev.evidence_id in valid]
+    return answer, cited_evidence
 
 
 def ensure_store(ticker: str, rebuild: bool = False) -> tuple[int, IngestionManifest | None]:
@@ -320,3 +328,21 @@ def ensure_store(ticker: str, rebuild: bool = False) -> tuple[int, IngestionMani
         return existing_count, manifest
 
     return count, load_manifest(ticker)
+
+def extract_cited_ids(answer: str) -> set[str]:
+    """Return the evidence IDs actually cited in an answer, e.g. {"E1", "E3"}."""
+    return {f"E{n}" for n in _CITATION_PATTERN.findall(answer)}
+
+
+def verify_citations(answer: str, evidence: list[RetrievedEvidence]) -> tuple[set[str], set[str]]:
+    """Split cited evidence IDs into valid and hallucinated.
+
+    The model is instructed to cite only supplied evidence, but instruction is
+    not enforcement. This checks what it actually did.
+
+    Returns:
+        A tuple of (valid cited IDs, invalid cited IDs).
+    """
+    supplied = {ev.evidence_id for ev in evidence}
+    cited = extract_cited_ids(answer)
+    return cited & supplied, cited - supplied

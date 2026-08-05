@@ -55,13 +55,10 @@ def run(ticker: str, rebuild: bool = False) -> None:
         if evidence:
             print("\nSources:")
             for ev in evidence:
-                metadata = ev.metadata
-                label = metadata.get("section") or metadata.get("publisher") or metadata.get("source_type", "source")
-                form = metadata.get("filing_form", "")
-                date = (metadata.get("published_at") or "")[:10]
-                url = metadata.get("url", "")
-                parts = [p for p in (f"[{ev.evidence_id}]", form, label, date, url) if p]
-                print("  " + " ".join(parts))
+                url = ev.metadata.get("url", "")
+                print(f"  [{ev.evidence_id}] {ev.citation_label} {url}".rstrip())
+        else:
+            print("\n(No sources cited.)")
 
 def main() -> None:
     setup_logging()
