@@ -9,9 +9,9 @@ from __future__ import annotations
 import logging
 from datetime import datetime, time, timezone
 
-from edgar import set_identity, Company
+from edgar import Company, set_identity
 
-from src.config import SEC_USER_AGENT, FILING_MAX_CHARS
+from src.config import FILING_MAX_CHARS, SEC_USER_AGENT
 from src.models import SourceDocument, make_document_id
 
 logger = logging.getLogger(__name__)
@@ -120,14 +120,15 @@ def get_filing_documents(
                 continue
             try:
                 raw = obj.get_item_with_part(part, item)
-            except Exception:
+            except Exception as e: # noqa: BLE001
+                logger.debug("Section %s %s unavailable for %s: %s", part, item, ticker, e)
                 continue
             if not raw:
                 continue
             text = " ".join(str(raw).split())
             if len(text) >= _MIN_SECTION_CHARS:
                 documents.append(_build(section_name, text))
-    except Exception as e:
+    except Exception as e: # noqa: BLE001
         logger.warning("Section extraction failed for %s %s: %s", ticker, filing_form, e)
 
     if not documents:

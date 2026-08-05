@@ -1,18 +1,18 @@
 """Company news retrieval via the Finnhub API."""
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
 import logging
+from datetime import datetime, timedelta, timezone
 
 import requests
 
 from src.cache import cached
 from src.config import (
+    CACHE_TTL_NEWS,
     FINNHUB_KEY,
     FINNHUB_NEWS_URL,
     NEWS_DAYS_BACK,
     NEWS_LIMIT,
-    CACHE_TTL_NEWS,
 )
 from src.models import SourceDocument, make_document_id
 

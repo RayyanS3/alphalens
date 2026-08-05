@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import yfinance as yf
-import pandas as pd
 import logging
 import re
+
+import pandas as pd
+import yfinance as yf
 
 logger = logging.getLogger(__name__)
 

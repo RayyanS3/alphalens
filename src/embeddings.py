@@ -1,8 +1,11 @@
 from __future__ import annotations
-import logging
+
 import functools
+import logging
+
 import voyageai
-from src.config import VOYAGE_API_KEY, EMBED_MODEL, EMBED_BATCH_SIZE
+
+from src.config import EMBED_BATCH_SIZE, EMBED_MODEL, VOYAGE_API_KEY
 
 logger = logging.getLogger(__name__)
 

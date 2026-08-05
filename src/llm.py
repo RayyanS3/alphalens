@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import functools
 import json
 import logging
 
 from anthropic import Anthropic
-from src.config import ANTHROPIC_API_KEY, LLM_MODEL, LLM_MAX_TOKENS
+
+from src.config import ANTHROPIC_API_KEY, LLM_MAX_TOKENS, LLM_MODEL
 
 logger = logging.getLogger(__name__)
 

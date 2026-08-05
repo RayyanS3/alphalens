@@ -14,18 +14,18 @@ from src.manifest import (
 
 
 def _manifest(**overrides) -> IngestionManifest:
-    defaults = dict(
-        ticker="AAPL",
-        built_at=datetime.now(timezone.utc).isoformat(),
-        pipeline_version="2",
-        embedding_model="voyage-finance-2",
-        chunk_size=800,
-        chunk_overlap=100,
-        chunk_count=91,
-        document_ids=["doc1", "doc2"],
-        accession_numbers=["0000320193-26-000020"],
-        latest_news_at="2026-08-04T12:00:00+00:00",
-    )
+    defaults = {
+        "ticker": "AAPL",
+        "built_at": datetime.now(timezone.utc).isoformat(),
+        "pipeline_version": "2",
+        "embedding_model": "voyage-finance-2",
+        "chunk_size": 800,
+        "chunk_overlap": 100,
+        "chunk_count": 91,
+        "document_ids": ["doc1", "doc2"],
+        "accession_numbers": ["0000320193-26-000020"],
+        "latest_news_at": "2026-08-04T12:00:00+00:00",
+    }
     return IngestionManifest(**{**defaults, **overrides})
 
 

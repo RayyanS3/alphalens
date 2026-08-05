@@ -1,15 +1,13 @@
 from __future__ import annotations
+
 import argparse
-from curses import meta
-
-from PIL.Image import item
-from src.config import validate_config
-from src.sources.prices import get_prices
-from src.analysis import add_moving_averages
-from src.rag import ensure_store, answer_question
-
-from src.logging_config import setup_logging
 import sys
+
+from src.analysis import add_moving_averages
+from src.config import validate_config
+from src.logging_config import setup_logging
+from src.rag import answer_question, ensure_store
+from src.sources.prices import get_prices
 
 RESEARCH_QUESTIONS = [
     "What are the key risks and challenges facing the company?",
@@ -51,13 +49,14 @@ def run(ticker: str, rebuild: bool = False) -> None:
 
         if evidence:
             print("\nSources:")
-            for item in evidence:
-                meta = item.metadata
-                label = meta.get("section") or meta.get("publisher") or meta.get("source_type", "source")
-                form = meta.get("filing_form", "")
-                date = (meta.get("published_at") or "")[:10]
-                url = meta.get("url", "")
-                print(f"  [{item.evidence_id}] {form} {label} {date} {url}".strip())
+            for ev in evidence:
+                metadata = ev.metadata
+                label = metadata.get("section") or metadata.get("publisher") or metadata.get("source_type", "source")
+                form = metadata.get("filing_form", "")
+                date = (metadata.get("published_at") or "")[:10]
+                url = metadata.get("url", "")
+                parts = [p for p in (f"[{ev.evidence_id}]", form, label, date, url) if p]
+                print("  " + " ".join(parts))
 
 def main() -> None:
     setup_logging()

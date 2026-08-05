@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Literal, Optional
+from typing import Literal
 
 SourceType = Literal["filing", "news"]
 
@@ -24,16 +24,16 @@ class SourceDocument:
     source_type: SourceType
     title: str
     text: str
-    url: Optional[str] = None
-    published_at: Optional[datetime] = None
+    url: str | None = None
+    published_at: datetime | None = None
 
     # Filing-specific
-    filing_form: Optional[str] = None
-    accession_number: Optional[str] = None
-    section: Optional[str] = None
+    filing_form: str | None = None
+    accession_number: str | None = None
+    section: str | None = None
 
     # News-specific
-    publisher: Optional[str] = None
+    publisher: str | None = None
 
     def to_metadata(self) -> dict:
         """Flatten to a ChromaDB-safe metadata dict (scalars only, no None)."""
@@ -71,7 +71,7 @@ class RetrievedEvidence:
     chunk_id: str
     text: str
     metadata: dict = field(default_factory=dict)
-    score: Optional[float] = None
+    score: float | None = None
 
     @property
     def citation_label(self) -> str:

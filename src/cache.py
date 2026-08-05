@@ -1,11 +1,14 @@
 from __future__ import annotations
+
 import functools
 import hashlib
 import json
 import logging
 import os
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
+
 from src.config import CACHE_DIR
 
 logger = logging.getLogger(__name__)

@@ -7,18 +7,18 @@ from src.models import SourceDocument, make_chunk_id, make_document_id
 
 
 def _filing_doc(**overrides) -> SourceDocument:
-    defaults = dict(
-        document_id="doc1",
-        ticker="AAPL",
-        source_type="filing",
-        title="Apple Inc. 10-Q — Risk Factors",
-        text="Risk text.",
-        url="https://sec.gov/example",
-        published_at=datetime(2026, 7, 31, tzinfo=timezone.utc),
-        filing_form="10-Q",
-        accession_number="0000320193-26-000020",
-        section="Risk Factors",
-    )
+    defaults = {
+        "document_id": "doc1",
+        "ticker": "AAPL",
+        "source_type": "filing",
+        "title": "Apple Inc. 10-Q — Risk Factors",
+        "text": "Risk text.",
+        "url": "https://sec.gov/example",
+        "published_at": datetime(2026, 7, 31, tzinfo=timezone.utc),
+        "filing_form": "10-Q",
+        "accession_number": "0000320193-26-000020",
+        "section": "Risk Factors",
+    }
     return SourceDocument(**{**defaults, **overrides})
 
 

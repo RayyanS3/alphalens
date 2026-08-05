@@ -10,15 +10,15 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 
 from src.config import (
+    CHUNK_OVERLAP,
+    CHUNK_SIZE,
+    EMBED_MODEL,
     MANIFEST_DIR,
     PIPELINE_VERSION,
-    EMBED_MODEL,
-    CHUNK_SIZE,
-    CHUNK_OVERLAP,
     STORE_MAX_AGE_HOURS,
 )
 

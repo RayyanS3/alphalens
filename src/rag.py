@@ -5,23 +5,29 @@ ChromaDB collection with full source metadata, retrieves the most relevant
 chunks as labelled evidence, and generates answers grounded in that evidence.
 """
 from __future__ import annotations
-from datetime import datetime
-from src.manifest import IngestionManifest, build_manifest, load_manifest, save_manifest, rebuild_reason
 
 import logging
+from datetime import datetime
 
 import chromadb
 
 from src.config import (
     CHROMA_DIR,
-    CHUNK_SIZE,
     CHUNK_OVERLAP,
-    RETRIEVAL_RESULTS,
-    LLM_MODEL,
+    CHUNK_SIZE,
     LLM_MAX_TOKENS,
+    LLM_MODEL,
+    RETRIEVAL_RESULTS,
 )
-from src.embeddings import embed_texts, embed_query
+from src.embeddings import embed_query, embed_texts
 from src.llm import get_client
+from src.manifest import (
+    IngestionManifest,
+    build_manifest,
+    load_manifest,
+    rebuild_reason,
+    save_manifest,
+)
 from src.models import (
     DocumentChunk,
     RetrievedEvidence,
