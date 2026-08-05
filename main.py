@@ -35,6 +35,11 @@ def run(ticker: str, rebuild: bool = False) -> None:
     print(f"\nPreparing research data for {ticker}...")
     chunk_count, manifest = ensure_store(ticker, rebuild=rebuild)
 
+    if chunk_count == 0:
+        print(f"\nNo research data could be retrieved for {ticker}.")
+        print("The filing and news sources were unavailable or returned nothing.")
+        return
+
     if manifest:
         print(f"Knowledge base: {chunk_count} chunks, updated {manifest.age_hours():.1f}h ago.")
         if manifest.latest_news_at:
@@ -43,7 +48,7 @@ def run(ticker: str, rebuild: bool = False) -> None:
         print(f"Knowledge base ready ({chunk_count} chunks).")
 
     for question in RESEARCH_QUESTIONS:
-        print(f"\n=== {question} ===") 
+        print(f"\n=== {question} ===")
         answer, evidence = answer_question(ticker, question)
         print(answer)
 

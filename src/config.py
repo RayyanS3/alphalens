@@ -19,7 +19,7 @@ LLM_MODEL: str = "claude-sonnet-4-6"
 EMBED_MODEL: str = "voyage-finance-2"
 
 # --- LLM settings ---
-LLM_MAX_TOKENS: int = 500
+LLM_MAX_TOKENS: int = 2000
 
 # --- Data source settings ---
 NEWS_DAYS_BACK: int = 21

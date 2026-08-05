@@ -47,7 +47,13 @@ def _fetch_raw_news(ticker: str, days_back: int = NEWS_DAYS_BACK) -> list[dict]:
     if response.status_code != 200:
         raise ValueError(f"Finnhub error for {ticker}: status {response.status_code}")
 
-    return response.json()
+    payload = response.json()
+    if not isinstance(payload, list):
+        raise ValueError( # noqa: TRY004
+            f"Finnhub returned unexpected response shape for {ticker}: {type(payload).__name__}"
+        )
+    return payload
+
 
 
 def get_news_documents(

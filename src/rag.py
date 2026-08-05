@@ -109,7 +109,15 @@ def build_store(ticker: str, chunks: list[DocumentChunk]) -> None:
 
 
 def build_full_store(ticker: str) -> int:
-    """Ingest a ticker's filings and news, then record an ingestion manifest."""
+    """Ingest a ticker's filings and news into its collection.
+
+    Fetches and embeds everything before touching the existing collection, so
+    a failure mid-ingestion leaves the previous store intact. Each source
+    fails independently.
+
+    Returns:
+        The number of chunks stored, or 0 if nothing could be ingested.
+    """
     chunks: list[DocumentChunk] = []
     document_ids: list[str] = []
     accessions: list[str] = []
@@ -121,8 +129,8 @@ def build_full_store(ticker: str) -> int:
             document_ids.append(document.document_id)
             if document.accession_number:
                 accessions.append(document.accession_number)
-    except ValueError as e:
-        logger.warning("No filing documents for %s: %s", ticker, e)
+    except Exception:  
+        logger.warning("Filing ingestion failed for %s.", ticker, exc_info=True)
 
     try:
         for document in get_news_documents(ticker):
@@ -130,14 +138,31 @@ def build_full_store(ticker: str) -> int:
             document_ids.append(document.document_id)
             if document.published_at:
                 news_dates.append(document.published_at)
-    except ValueError as e:
-        logger.warning("No news documents for %s: %s", ticker, e)
+    except Exception:
+        logger.warning("News ingestion failed for %s.", ticker, exc_info=True)
 
     if not chunks:
-        logger.warning("No documents could be ingested for %s.", ticker)
+        logger.error("No documents could be ingested for %s.", ticker)
         return 0
 
-    build_store(ticker, chunks)
+    # Embed before destroying anything: this is the failure-prone step.
+    vectors = embed_texts([c.text for c in chunks])
+
+    name = _collection_name(ticker)
+    try:
+        _chroma_client.delete_collection(name=name)
+    except Exception as e:  # noqa: BLE001
+        logger.debug("No existing collection to delete for %s: %s", ticker, e)
+
+    collection = _chroma_client.get_or_create_collection(name=name)
+    collection.upsert(
+        ids=[c.chunk_id for c in chunks],
+        embeddings=vectors,
+        documents=[c.text for c in chunks],
+        metadatas=[c.metadata for c in chunks],
+    )
+    logger.info("Stored %d chunks for %s.", len(chunks), ticker)
+
     save_manifest(
         build_manifest(
             ticker=ticker,
@@ -148,7 +173,6 @@ def build_full_store(ticker: str) -> int:
         )
     )
     return len(chunks)
-
 
 def retrieve(ticker: str, query: str, n_results: int = RETRIEVAL_RESULTS) -> list[RetrievedEvidence]:
     """Retrieve the most relevant chunks as labelled, citable evidence."""
@@ -242,7 +266,15 @@ Answer:"""
         messages=[{"role": "user", "content": prompt}],
     )
 
-    return response.content[0].text, evidence
+    answer = response.content[0].text
+
+    if response.stop_reason == "max_tokens":
+        logger.warning(
+            "Answer truncated at %d tokens for %s: %r", LLM_MAX_TOKENS, ticker, question
+        )
+        answer += "\n\n*[Answer truncated — response exceeded the configured length limit.]*"
+
+    return answer, evidence
 
 
 def store_exists(ticker: str) -> bool:
@@ -254,29 +286,37 @@ def store_exists(ticker: str) -> bool:
 def ensure_store(ticker: str, rebuild: bool = False) -> tuple[int, IngestionManifest | None]:
     """Ensure a ticker's store is present, current, and pipeline-compatible.
 
-    Rebuilds when forced, when no valid manifest exists, when the store has
-    aged past its maximum, or when pipeline settings have changed since it
-    was built.
+    The existing store is preserved until a replacement has been successfully
+    embedded, so a failed rebuild cannot leave the ticker with no data.
 
     Returns:
-        A tuple of (chunk count, the manifest describing the store).
+        A tuple of (chunk count, manifest). A count of 0 means ingestion
+        failed and no usable store exists.
     """
     name = _collection_name(ticker)
     manifest = load_manifest(ticker)
     collection = _chroma_client.get_or_create_collection(name=name)
+    existing_count = collection.count()
 
     reason = "forced rebuild" if rebuild else rebuild_reason(manifest)
-    if reason is None and collection.count() == 0:
+    if reason is None and existing_count == 0:
         reason = "collection is empty"
 
-    if reason:
-        logger.info("Rebuilding store for %s: %s.", ticker, reason)
-        _chroma_client.delete_collection(name=name)
-        count = build_full_store(ticker)
-        return count, load_manifest(ticker)
+    if reason is None:
+        logger.info(
+            "Reusing store for %s (%d chunks, %.1fh old).",
+            ticker, existing_count, manifest.age_hours(),
+        )
+        return existing_count, manifest
 
-    logger.info(
-        "Reusing store for %s (%d chunks, %.1fh old).",
-        ticker, manifest.chunk_count, manifest.age_hours(),
-    )
-    return manifest.chunk_count, manifest
+    logger.info("Rebuilding store for %s: %s.", ticker, reason)
+    count = build_full_store(ticker)
+
+    if count == 0 and existing_count > 0:
+        logger.warning(
+            "Rebuild failed for %s; retaining existing store of %d chunks.",
+            ticker, existing_count,
+        )
+        return existing_count, manifest
+
+    return count, load_manifest(ticker)
