@@ -7,7 +7,7 @@ from src.analysis import add_moving_averages
 from src.config import validate_config
 from src.logging_config import setup_logging
 from src.rag import answer_question, ensure_store
-from src.sources.prices import get_prices
+from src.sources.prices import get_prices, valid_ticker
 
 RESEARCH_QUESTIONS = [
     "What are the key risks and challenges facing the company?",
@@ -49,18 +49,28 @@ def run(ticker: str, rebuild: bool = False) -> None:
 
     for question in RESEARCH_QUESTIONS:
         print(f"\n=== {question} ===")
-        answer, evidence = answer_question(ticker, question)
-        print(answer)
+        result = answer_question(ticker, question)
 
-        if evidence:
+        if result.status == "no_store":
+            print(f"No knowledge base available for {ticker}. Run with --rebuild to ingest.")
+            continue
+
+        if result.status == "no_evidence":
+            print("No relevant evidence found for this question in the ingested sources.")
+            continue
+
+        print(result.text)
+
+        if result.evidence:
             print("\nSources:")
-            for ev in evidence:
+            for ev in result.evidence:
                 url = ev.metadata.get("url", "")
                 print(f"  [{ev.evidence_id}] {ev.citation_label} {url}".rstrip())
         else:
-            print("\n(No sources cited.)")
+            print("\n(The answer cited no sources.)")
 
 def main() -> None:
+    """Parse command-line arguments and run the pipeline."""
     setup_logging()
 
     try:
@@ -71,10 +81,19 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="AlphaLens equity research.")
     parser.add_argument("ticker", help="Stock ticker symbol, e.g. AAPL")
-    parser.add_argument("--rebuild", action="store_true", help="Force a full rebuild of the knowledge base")
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="Force a full rebuild of the knowledge base",
+    )
     args = parser.parse_args()
 
-    run(args.ticker.upper(), rebuild=args.rebuild)
+    ticker = args.ticker.upper()
+    if not valid_ticker(ticker):
+        print(f"Invalid ticker format: {ticker!r}")
+        sys.exit(1)
+
+    run(ticker, rebuild=args.rebuild)
 
 
 if __name__ == "__main__":

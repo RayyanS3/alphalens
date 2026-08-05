@@ -8,7 +8,7 @@ import yfinance as yf
 
 logger = logging.getLogger(__name__)
 
-_TICKER_PATTERN = re.compile(r"[A-Z]{1,5}")
+_TICKER_PATTERN = re.compile(r"[A-Z]{1,5}(?:[.-][A-Z]{1,2})?")
 
 def valid_ticker(ticker: str) -> bool:
     return bool(_TICKER_PATTERN.fullmatch(ticker))

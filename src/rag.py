@@ -6,6 +6,10 @@ chunks as labelled evidence, and generates answers grounded in that evidence.
 """
 from __future__ import annotations
 
+
+class StoreNotFoundError(RuntimeError):
+    """Raised when a ticker has no ingested knowledge base."""
+
 import logging
 import re
 from datetime import datetime
@@ -33,6 +37,7 @@ from src.manifest import (
 )
 from src.models import (
     DocumentChunk,
+    ResearchAnswer,
     RetrievedEvidence,
     SourceDocument,
     make_chunk_id,
@@ -179,9 +184,16 @@ def build_full_store(ticker: str) -> int:
 
 def retrieve(ticker: str, query: str, n_results: int = RETRIEVAL_RESULTS) -> list[RetrievedEvidence]:
     """Retrieve the most relevant chunks as labelled, citable evidence."""
-    collection = _chroma_client.get_or_create_collection(name=_collection_name(ticker))
-    query_vector = embed_query(query)
+    name = _collection_name(ticker)
+    try:
+        collection = _chroma_client.get_collection(name=name)
+    except Exception as e:
+        raise StoreNotFoundError(f"No knowledge base exists for {ticker}.") from e
 
+    if collection.count() == 0:
+        raise StoreNotFoundError(f"Knowledge base for {ticker} is empty.")
+
+    query_vector = embed_query(query)
     results = collection.query(
         query_embeddings=[query_vector],
         n_results=n_results,
@@ -236,15 +248,36 @@ def _format_evidence(evidence: list[RetrievedEvidence]) -> str:
     return "\n\n".join(blocks)
 
 
-def answer_question(ticker: str, question: str, n_results: int = RETRIEVAL_RESULTS) -> tuple[str, list[RetrievedEvidence]]:
-    """Answer a question grounded in retrieved evidence.
+def answer_question(
+    ticker: str,
+    question: str,
+    n_results: int = RETRIEVAL_RESULTS,
+) -> ResearchAnswer:
+    """Answer a question grounded strictly in retrieved evidence.
+
+    Distinguishes three outcomes: the ticker has no ingested store, the store
+    exists but yielded no relevant evidence, or an answer was generated.
+
+    Args:
+        ticker: The stock ticker symbol.
+        question: The research question to answer.
+        n_results: How many evidence chunks to retrieve.
 
     Returns:
-        A tuple of (answer text, the evidence supplied to the model).
+        A ResearchAnswer carrying the outcome status, the answer text, and the
+        evidence the model actually cited.
     """
-    evidence = retrieve(ticker, question, n_results=n_results)
+    try:
+        evidence = retrieve(ticker, question, n_results=n_results)
+    except StoreNotFoundError as e:
+        logger.warning("Cannot answer for %s: %s", ticker, e)
+        return ResearchAnswer(status="no_store", text=str(e))
+
     if not evidence:
-        return "No relevant information found in the knowledge base.", []
+        return ResearchAnswer(
+            status="no_evidence",
+            text="No relevant evidence was found for this question in the available sources.",
+        )
 
     prompt = f"""You are a financial research assistant analyzing {ticker}.
 
@@ -270,8 +303,9 @@ Answer:"""
     )
 
     answer = response.content[0].text
+    truncated = response.stop_reason == "max_tokens"
 
-    if response.stop_reason == "max_tokens":
+    if truncated:
         logger.warning(
             "Answer truncated at %d tokens for %s: %r", LLM_MAX_TOKENS, ticker, question
         )
@@ -287,8 +321,12 @@ Answer:"""
     if not valid:
         logger.warning("Answer contains no citations for %s: %r", ticker, question)
 
-    cited_evidence = [ev for ev in evidence if ev.evidence_id in valid]
-    return answer, cited_evidence
+    return ResearchAnswer(
+        status="answered",
+        text=answer,
+        evidence=[ev for ev in evidence if ev.evidence_id in valid],
+        truncated=truncated,
+    )
 
 
 def ensure_store(ticker: str, rebuild: bool = False) -> tuple[int, IngestionManifest | None]:

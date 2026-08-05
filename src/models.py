@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Literal
 
 SourceType = Literal["filing", "news"]
-
+AnswerStatus = Literal["answered", "no_evidence", "no_store"]
 
 @dataclass(frozen=True)
 class SourceDocument:
@@ -86,6 +86,14 @@ class RetrievedEvidence:
         parts.append(date or None)
         return " ".join(p for p in parts if p)
 
+@dataclass(frozen=True)
+class ResearchAnswer:
+    """The outcome of a research question, including why it failed if it did."""
+
+    status: AnswerStatus
+    text: str
+    evidence: list[RetrievedEvidence] = field(default_factory=list)
+    truncated: bool = False
 
 def make_document_id(ticker: str, source_type: str, natural_key: str) -> str:
     """Deterministic document ID from a stable natural key.
