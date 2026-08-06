@@ -12,8 +12,7 @@ FINNHUB_KEY: str | None = os.getenv("FINNHUB_KEY")
 VOYAGE_API_KEY: str | None = os.getenv("VOYAGE_API_KEY")
 
 # --- Identity (SEC requires a contact email in request headers) ---
-SEC_USER_AGENT: str = os.getenv("SEC_USER_AGENT", "AlphaLens rayyan.suhail2001@gmail.com")
-
+SEC_USER_AGENT: str | None = os.getenv("SEC_USER_AGENT")
 # --- Models ---
 LLM_MODEL: str = "claude-sonnet-4-6"
 EMBED_MODEL: str = "voyage-finance-2"
@@ -59,6 +58,7 @@ REQUIRED_KEYS: dict[str, str | None] = {
     "ANTHROPIC_API_KEY": ANTHROPIC_API_KEY,
     "FINNHUB_KEY": FINNHUB_KEY,
     "VOYAGE_API_KEY": VOYAGE_API_KEY,
+    "SEC_USER_AGENT": SEC_USER_AGENT,
 }
 
 

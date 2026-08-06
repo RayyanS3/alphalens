@@ -111,7 +111,7 @@ def main() -> None:
     for r in summary["results"]:
         rank = r["hit_rank"] if r["hit_rank"] else ("n/a" if r["expect_source_type"] is None else "MISS")
         score = f"{r['top_score']:.3f}" if r.get("top_score") is not None else "-"
-        print(f"{r['id']:<32} {str(rank):>5}  {score:>10}")
+        print(f"{r['id']:<32} {rank!s:>5}  {score:>10}")
 
     print(f"\nAnswerable cases: {summary['answerable_cases']}")
     print(f"Recall@{summary['top_k']}:      {summary['recall_at_k']:.1%}")

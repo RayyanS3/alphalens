@@ -119,3 +119,9 @@ def test_build_manifest_records_current_settings():
 def test_build_manifest_handles_missing_news_date():
     m = build_manifest("AAPL", 5, ["d1"], [], None)
     assert m.latest_news_at is None
+
+
+def test_naive_built_at_treated_as_utc():
+    """A hand-edited manifest must not crash the freshness check."""
+    m = _manifest(built_at="2026-08-01T12:00:00")
+    assert m.age_hours() > 0

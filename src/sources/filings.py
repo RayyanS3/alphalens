@@ -6,6 +6,7 @@ identity of the filing and the specific section it came from.
 """
 from __future__ import annotations
 
+import functools
 import logging
 from datetime import datetime, time, timezone
 
@@ -16,8 +17,12 @@ from src.models import SourceDocument, make_document_id
 
 logger = logging.getLogger(__name__)
 
-set_identity(SEC_USER_AGENT)
-
+@functools.lru_cache(maxsize=1)
+def _ensure_identity() -> None:
+    """Register the SEC contact identity once, on first use."""
+    if not SEC_USER_AGENT:
+        raise RuntimeError("SEC_USER_AGENT is not set.")
+    set_identity(SEC_USER_AGENT)
 # SEC item numbering is legally fixed, so this mapping is stable.
 # Item numbers repeat across parts, hence (part, item) keys.
 TENQ_SECTIONS: dict[tuple[str, str], str] = {
@@ -90,6 +95,7 @@ def get_filing_documents(
     Raises:
         ValueError: If no filing of the requested form exists.
     """
+    _ensure_identity()
     filing = Company(ticker).get_filings(form=form).latest(1)
     if filing is None:
         raise ValueError(f"No {form} filing found for {ticker}.")

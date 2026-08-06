@@ -263,6 +263,7 @@ def _format_evidence(evidence: list[RetrievedEvidence]) -> str:
                 parts.append(f"Publisher: {meta['publisher']}")
             if meta.get("title"):
                 parts.append(f"Headline: {meta['title']}")
+            parts.append("Note: headline and summary only, not full article text")
 
         if meta.get("published_at"):
             parts.append(f"Date: {meta['published_at'][:10]}")
@@ -281,6 +282,9 @@ def answer_question(
 
     Distinguishes three outcomes: the ticker has no ingested store, the store
     exists but yielded no relevant evidence, or an answer was generated.
+
+    News evidence is headlines and summaries only, not full articles. Do not
+    infer detail beyond what the text states.
 
     Args:
         ticker: The stock ticker symbol.

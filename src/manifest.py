@@ -51,8 +51,14 @@ class IngestionManifest:
         )
 
     def age_hours(self) -> float:
-        """Hours since this store was built."""
+        """Hours since this store was built.
+
+        Treats a naive timestamp as UTC rather than failing, so a hand-edited
+        manifest degrades to a rebuild decision instead of crashing.
+        """
         built = datetime.fromisoformat(self.built_at)
+        if built.tzinfo is None:
+            built = built.replace(tzinfo=timezone.utc)
         return (datetime.now(timezone.utc) - built).total_seconds() / 3600
 
 
