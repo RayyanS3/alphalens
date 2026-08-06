@@ -140,6 +140,7 @@ def build_full_store(ticker: str) -> int:
     document_ids: list[str] = []
     accessions: list[str] = []
     news_dates: list[datetime] = []
+    sections: list[str] = []
 
     try:
         for document in get_filing_documents(ticker):
@@ -147,6 +148,8 @@ def build_full_store(ticker: str) -> int:
             document_ids.append(document.document_id)
             if document.accession_number:
                 accessions.append(document.accession_number)
+            if document.section:
+                sections.append(document.section)
     except Exception:
         logger.warning("Filing ingestion failed for %s.", ticker, exc_info=True)
 
@@ -194,6 +197,7 @@ def build_full_store(ticker: str) -> int:
             document_ids=document_ids,
             accession_numbers=sorted(set(accessions)),
             latest_news_at=max(news_dates) if news_dates else None,
+            sections=sections,
         )
     )
     return len(chunks)
@@ -245,21 +249,25 @@ def _format_evidence(evidence: list[RetrievedEvidence]) -> str:
     blocks = []
     for item in evidence:
         meta = item.metadata
-        header_parts = [f"[{item.evidence_id}]", f"Source: {meta.get('source_type', 'unknown')}"]
+        parts = [f"[{item.evidence_id}]", f"Source: {meta.get('source_type', 'unknown')}"]
 
         if meta.get("source_type") == "filing":
             if meta.get("filing_form"):
-                header_parts.append(f"Form: {meta['filing_form']}")
+                parts.append(f"Form: {meta['filing_form']}")
+            if meta.get("section"):
+                parts.append(f"Section: {meta['section']}")
             if meta.get("accession_number"):
-                header_parts.append(f"Accession: {meta['accession_number']}")
+                parts.append(f"Accession: {meta['accession_number']}")
         else:
             if meta.get("publisher"):
-                header_parts.append(f"Publisher: {meta['publisher']}")
+                parts.append(f"Publisher: {meta['publisher']}")
+            if meta.get("title"):
+                parts.append(f"Headline: {meta['title']}")
 
         if meta.get("published_at"):
-            header_parts.append(f"Date: {meta['published_at'][:10]}")
+            parts.append(f"Date: {meta['published_at'][:10]}")
 
-        blocks.append(" | ".join(header_parts) + f"\nText: {item.text}")
+        blocks.append(" | ".join(parts) + f"\nText: {item.text}")
 
     return "\n\n".join(blocks)
 

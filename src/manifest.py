@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 
 from src.config import (
@@ -39,6 +39,7 @@ class IngestionManifest:
     document_ids: list[str]
     accession_numbers: list[str]
     latest_news_at: str | None
+    sections: list[str] = field(default_factory=list)
 
     def settings_fingerprint(self) -> tuple:
         """The settings that must match for a store to be reusable."""
@@ -94,6 +95,7 @@ def build_manifest(
     document_ids: list[str],
     accession_numbers: list[str],
     latest_news_at: datetime | None,
+    sections: list[str] | None = None,
 ) -> IngestionManifest:
     """Create a manifest describing an ingestion that just completed."""
     return IngestionManifest(
@@ -107,6 +109,7 @@ def build_manifest(
         document_ids=document_ids,
         accession_numbers=accession_numbers,
         latest_news_at=latest_news_at.isoformat() if latest_news_at else None,
+        sections=sorted(set(sections or [])),
     )
 
 

@@ -45,8 +45,13 @@ TENK_SECTIONS: dict[tuple[str, str], str] = {
 }
 
 # Sections with little analytical value; skipped to avoid noise in retrieval.
-SKIP_SECTIONS = {"Exhibits", "Mine Safety Disclosures", "Defaults Upon Senior Securities", "Financial Statements"}
-
+SKIP_SECTIONS = {
+    "Exhibits",
+    "Mine Safety Disclosures",
+    "Defaults Upon Senior Securities",
+    "Financial Statements",
+    "Financial Statements and Supplementary Data",
+}
 _MIN_SECTION_CHARS = 200
 
 
@@ -112,24 +117,47 @@ def get_filing_documents(
         )
 
     documents: list[SourceDocument] = []
+    expected: list[str] = []
+    missing: list[str] = []
 
     try:
         obj = filing.obj()
         for (part, item), section_name in _section_map(filing_form).items():
             if section_name in SKIP_SECTIONS:
                 continue
+
+            expected.append(section_name)
             try:
                 raw = obj.get_item_with_part(part, item)
             except Exception as e: # noqa: BLE001
-                logger.debug("Section %s %s unavailable for %s: %s", part, item, ticker, e)
+                logger.warning(
+                    "Section %r unavailable for %s %s: %s", section_name, ticker, filing_form, e
+                )
+                missing.append(section_name)                
                 continue
+
             if not raw:
+                missing.append(section_name)
                 continue
+
             text = " ".join(str(raw).split())
-            if len(text) >= _MIN_SECTION_CHARS:
-                documents.append(_build(section_name, text))
+            if len(text) < _MIN_SECTION_CHARS:
+                logger.info(
+                    "Section %r for %s too short (%d chars); skipping.",
+                    section_name, ticker, len(text),
+                )
+                missing.append(section_name)
+                continue
+
+            documents.append(_build(section_name, text))
     except Exception as e: # noqa: BLE001
         logger.warning("Section extraction failed for %s %s: %s", ticker, filing_form, e)
+
+    if missing:
+        logger.warning(
+            "Missing %d of %d expected sections for %s %s: %s",
+            len(missing), len(expected), ticker, filing_form, ", ".join(missing),
+        )
 
     if not documents:
         logger.warning("No sections extracted for %s; falling back to full text.", ticker)

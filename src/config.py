@@ -37,7 +37,7 @@ CACHE_DIR: str = "data/cache"
 CACHE_TTL_NEWS: int = 1_800       # 30 minutes
 
 # --- Pipeline versioning ---
-PIPELINE_VERSION: str = "2"
+PIPELINE_VERSION: str = "3"
 
 # --- Storage ---
 CHROMA_DIR: str = "data/chroma"
