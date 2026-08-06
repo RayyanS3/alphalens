@@ -1,0 +1,676 @@
+{
+  "run_at": "2026-08-06T19:31:59.480260+00:00",
+  "top_k": 5,
+  "dataset_version": "1",
+  "answerable_cases": 17,
+  "recall_at_k": 0.9411764705882353,
+  "precision_at_1": 0.8235294117647058,
+  "mrr": 0.8725490196078431,
+  "results": [
+    {
+      "id": "aapl-risks",
+      "ticker": "AAPL",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors",
+      "hit_rank": 1,
+      "top_score": 1.1110562086105347,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.1110562086105347
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.1867570877075195
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.207074522972107
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2076681852340698
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2272547483444214
+        }
+      ]
+    },
+    {
+      "id": "aapl-supply-chain",
+      "ticker": "AAPL",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors",
+      "hit_rank": 1,
+      "top_score": 0.87078857421875,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 0.87078857421875
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 0.9887692928314209
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.0408568382263184
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.14796781539917
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.1788296699523926
+        }
+      ]
+    },
+    {
+      "id": "aapl-regulatory",
+      "ticker": "AAPL",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors",
+      "hit_rank": 1,
+      "top_score": 0.92548006772995,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 0.92548006772995
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.1913433074951172
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2129313945770264
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.242820382118225
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.267593264579773
+        }
+      ]
+    },
+    {
+      "id": "aapl-revenue-discussion",
+      "ticker": "AAPL",
+      "expect_source_type": "filing",
+      "expect_section": "Management's Discussion and Analysis",
+      "hit_rank": 1,
+      "top_score": 1.3415656089782715,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.3415656089782715
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.3452889919281006
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.3499703407287598
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.3792445659637451
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.445648431777954
+        }
+      ]
+    },
+    {
+      "id": "aapl-liquidity",
+      "ticker": "AAPL",
+      "expect_source_type": "filing",
+      "expect_section": "Management's Discussion and Analysis",
+      "hit_rank": 1,
+      "top_score": 1.4713051319122314,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.4713051319122314
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.5374619960784912
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.5665233135223389
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.599888801574707
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.63558030128479
+        }
+      ]
+    },
+    {
+      "id": "aapl-legal",
+      "ticker": "AAPL",
+      "expect_source_type": "filing",
+      "expect_section": "Legal Proceedings",
+      "hit_rank": 1,
+      "top_score": 1.141108751296997,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Legal Proceedings",
+          "score": 1.141108751296997
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.1418248414993286
+        },
+        {
+          "source_type": "filing",
+          "section": "Legal Proceedings",
+          "score": 1.2004308700561523
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2635174989700317
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2810726165771484
+        }
+      ]
+    },
+    {
+      "id": "aapl-buybacks",
+      "ticker": "AAPL",
+      "expect_source_type": "filing",
+      "expect_section": "Unregistered Sales of Equity Securities",
+      "hit_rank": 1,
+      "top_score": 1.1968446969985962,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Unregistered Sales of Equity Securities",
+          "score": 1.1968446969985962
+        },
+        {
+          "source_type": "filing",
+          "section": "Unregistered Sales of Equity Securities",
+          "score": 1.2694025039672852
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.2894623279571533
+        },
+        {
+          "source_type": "filing",
+          "section": "Unregistered Sales of Equity Securities",
+          "score": 1.3505058288574219
+        },
+        {
+          "source_type": "filing",
+          "section": "Unregistered Sales of Equity Securities",
+          "score": 1.3860106468200684
+        }
+      ]
+    },
+    {
+      "id": "aapl-news",
+      "ticker": "AAPL",
+      "expect_source_type": "news",
+      "expect_section": null,
+      "hit_rank": 1,
+      "top_score": 1.5443432331085205,
+      "retrieved": [
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.5443432331085205
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.5536471605300903
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.5685985088348389
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.587245225906372
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.5895369052886963
+        }
+      ]
+    },
+    {
+      "id": "aapl-analyst-views",
+      "ticker": "AAPL",
+      "expect_source_type": "news",
+      "expect_section": null,
+      "hit_rank": 1,
+      "top_score": 1.410408854484558,
+      "retrieved": [
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.410408854484558
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.592909336090088
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.6326625347137451
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.6982619762420654
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.707343578338623
+        }
+      ]
+    },
+    {
+      "id": "aapl-unanswerable-ceo-pay",
+      "ticker": "AAPL",
+      "expect_source_type": null,
+      "expect_section": null,
+      "hit_rank": 1,
+      "top_score": 1.628288984298706,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Legal Proceedings",
+          "score": 1.628288984298706
+        },
+        {
+          "source_type": "filing",
+          "section": "Unregistered Sales of Equity Securities",
+          "score": 1.632624626159668
+        },
+        {
+          "source_type": "filing",
+          "section": "Other Information",
+          "score": 1.6600710153579712
+        },
+        {
+          "source_type": "filing",
+          "section": "Legal Proceedings",
+          "score": 1.6880344152450562
+        },
+        {
+          "source_type": "filing",
+          "section": "Other Information",
+          "score": 1.6984751224517822
+        }
+      ]
+    },
+    {
+      "id": "aapl-unanswerable-competitor",
+      "ticker": "AAPL",
+      "expect_source_type": null,
+      "expect_section": null,
+      "hit_rank": 1,
+      "top_score": 1.5011513233184814,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.5011513233184814
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.5942814350128174
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.6300324201583862
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.6697304248809814
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.6722569465637207
+        }
+      ]
+    },
+    {
+      "id": "msft-risks",
+      "ticker": "MSFT",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors",
+      "hit_rank": 1,
+      "top_score": 1.1852586269378662,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.1852586269378662
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2041981220245361
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2092955112457275
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2378289699554443
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.2387454509735107
+        }
+      ]
+    },
+    {
+      "id": "msft-cyber",
+      "ticker": "MSFT",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors",
+      "hit_rank": 1,
+      "top_score": 0.8506377339363098,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 0.8506377339363098
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 0.8543245792388916
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.0353448390960693
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.0477339029312134
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.061483383178711
+        }
+      ]
+    },
+    {
+      "id": "msft-segments",
+      "ticker": "MSFT",
+      "expect_source_type": "filing",
+      "expect_section": "Management's Discussion and Analysis",
+      "hit_rank": 1,
+      "top_score": 1.4181246757507324,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.4181246757507324
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.4631588459014893
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.513550043106079
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.5151619911193848
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.5241429805755615
+        }
+      ]
+    },
+    {
+      "id": "msft-news",
+      "ticker": "MSFT",
+      "expect_source_type": "news",
+      "expect_section": null,
+      "hit_rank": 2,
+      "top_score": 1.4335436820983887,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Unregistered Sales of Equity Securities",
+          "score": 1.4335436820983887
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.4522600173950195
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.511225938796997
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.5168083906173706
+        },
+        {
+          "source_type": "news",
+          "section": null,
+          "score": 1.5247316360473633
+        }
+      ]
+    },
+    {
+      "id": "mu-risks",
+      "ticker": "MU",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors",
+      "hit_rank": 1,
+      "top_score": 1.0820355415344238,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.0820355415344238
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.0932753086090088
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.1000844240188599
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.1199324131011963
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.151310920715332
+        }
+      ]
+    },
+    {
+      "id": "mu-demand",
+      "ticker": "MU",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors",
+      "hit_rank": 3,
+      "top_score": 0.9082082509994507,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 0.9082082509994507
+        },
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 0.9848212599754333
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 0.990136444568634
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.0184955596923828
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.0614209175109863
+        }
+      ]
+    },
+    {
+      "id": "mu-controls",
+      "ticker": "MU",
+      "expect_source_type": "filing",
+      "expect_section": "Controls and Procedures",
+      "hit_rank": 1,
+      "top_score": 1.0014618635177612,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Controls and Procedures",
+          "score": 1.0014618635177612
+        },
+        {
+          "source_type": "filing",
+          "section": "Controls and Procedures",
+          "score": 1.4826288223266602
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.5665664672851562
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.5724010467529297
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.580592393875122
+        }
+      ]
+    },
+    {
+      "id": "mu-news",
+      "ticker": "MU",
+      "expect_source_type": "news",
+      "expect_section": null,
+      "hit_rank": null,
+      "top_score": 1.4670395851135254,
+      "retrieved": [
+        {
+          "source_type": "filing",
+          "section": "Management's Discussion and Analysis",
+          "score": 1.4670395851135254
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.4811350107192993
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.5397334098815918
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.5600345134735107
+        },
+        {
+          "source_type": "filing",
+          "section": "Risk Factors",
+          "score": 1.572521448135376
+        }
+      ]
+    }
+  ]
+}

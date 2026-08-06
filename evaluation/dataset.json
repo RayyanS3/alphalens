@@ -1,0 +1,134 @@
+{
+  "version": "1",
+  "cases": [
+    {
+      "id": "aapl-risks",
+      "ticker": "AAPL",
+      "question": "What are the key risks and challenges facing the company?",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors"
+    },
+    {
+      "id": "aapl-supply-chain",
+      "ticker": "AAPL",
+      "question": "What does the company say about component supply constraints?",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors"
+    },
+    {
+      "id": "aapl-regulatory",
+      "ticker": "AAPL",
+      "question": "What regulatory challenges does the company face in the EU?",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors"
+    },
+    {
+      "id": "aapl-revenue-discussion",
+      "ticker": "AAPL",
+      "question": "How did revenue and gross margin change this quarter?",
+      "expect_source_type": "filing",
+      "expect_section": "Management's Discussion and Analysis"
+    },
+    {
+      "id": "aapl-liquidity",
+      "ticker": "AAPL",
+      "question": "What does management say about liquidity and capital resources?",
+      "expect_source_type": "filing",
+      "expect_section": "Management's Discussion and Analysis"
+    },
+    {
+      "id": "aapl-legal",
+      "ticker": "AAPL",
+      "question": "What legal proceedings is the company involved in?",
+      "expect_source_type": "filing",
+      "expect_section": "Legal Proceedings"
+    },
+    {
+      "id": "aapl-buybacks",
+      "ticker": "AAPL",
+      "question": "Did the company repurchase any of its own shares?",
+      "expect_source_type": "filing",
+      "expect_section": "Unregistered Sales of Equity Securities"
+    },
+    {
+      "id": "aapl-news",
+      "ticker": "AAPL",
+      "question": "What is the recent news and sentiment around the company?",
+      "expect_source_type": "news"
+    },
+    {
+      "id": "aapl-analyst-views",
+      "ticker": "AAPL",
+      "question": "What are analysts saying about the stock recently?",
+      "expect_source_type": "news"
+    },
+    {
+      "id": "aapl-unanswerable-ceo-pay",
+      "ticker": "AAPL",
+      "question": "What was the CEO's total compensation package last year?",
+      "expect_source_type": null,
+      "note": "Executive compensation is in the proxy statement, not the 10-Q."
+    },
+    {
+      "id": "aapl-unanswerable-competitor",
+      "ticker": "AAPL",
+      "question": "How does Microsoft's cloud revenue compare to Amazon's?",
+      "expect_source_type": null,
+      "note": "Unrelated to the ingested company."
+    },
+    {
+      "id": "msft-risks",
+      "ticker": "MSFT",
+      "question": "What are the key risks and challenges facing the company?",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors"
+    },
+    {
+      "id": "msft-cyber",
+      "ticker": "MSFT",
+      "question": "What does the company say about cybersecurity threats?",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors"
+    },
+    {
+      "id": "msft-segments",
+      "ticker": "MSFT",
+      "question": "How did the company's business segments perform?",
+      "expect_source_type": "filing",
+      "expect_section": "Management's Discussion and Analysis"
+    },
+    {
+      "id": "msft-news",
+      "ticker": "MSFT",
+      "question": "What is the recent news around the company?",
+      "expect_source_type": "news"
+    },
+    {
+      "id": "mu-risks",
+      "ticker": "MU",
+      "question": "What are the key risks and challenges facing the company?",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors"
+    },
+    {
+      "id": "mu-demand",
+      "ticker": "MU",
+      "question": "What does the company say about memory demand and pricing?",
+      "expect_source_type": "filing",
+      "expect_section": "Risk Factors"
+    },
+    {
+      "id": "mu-controls",
+      "ticker": "MU",
+      "question": "Were there any changes to internal control over financial reporting?",
+      "expect_source_type": "filing",
+      "expect_section": "Controls and Procedures"
+    },
+    {
+      "id": "mu-news",
+      "ticker": "MU",
+      "question": "What is the recent news around the company?",
+      "expect_source_type": "news"
+    }
+  ]
+}
