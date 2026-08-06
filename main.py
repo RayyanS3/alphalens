@@ -30,6 +30,8 @@ def print_price_snapshot(ticker: str) -> None:
 
 
 def run(ticker: str, rebuild: bool = False) -> None:
+    """Run the full AlphaLens analysis pipeline for a ticker."""    
+
     print_price_snapshot(ticker)
 
     print(f"\nPreparing research data for {ticker}...")
@@ -37,7 +39,7 @@ def run(ticker: str, rebuild: bool = False) -> None:
 
     if chunk_count == 0:
         print(f"\nNo research data could be retrieved for {ticker}.")
-        print("The filing and news sources were unavailable or returned nothing.")
+        print("No SEC filings were found, so this may not be a US-listed company.")
         return
 
     if manifest:
