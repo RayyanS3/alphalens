@@ -47,6 +47,12 @@ STORE_MAX_AGE_HOURS: int = 24
 # --- External endpoints ---
 FINNHUB_NEWS_URL: str = "https://finnhub.io/api/v1/company-news"
 
+# --- Ingestion policy ---
+# AlphaLens scopes to US companies filing with SEC EDGAR. When True, a ticker
+# with no retrievable filings is rejected rather than being backed by news
+# alone, since news APIs return loose matches for non-existent tickers.
+REQUIRE_FILINGS: bool = True
+
 # --- Validation ---
 
 REQUIRED_KEYS: dict[str, str | None] = {

@@ -24,6 +24,7 @@ from src.config import (
     CHUNK_SIZE,
     LLM_MAX_TOKENS,
     LLM_MODEL,
+    REQUIRE_FILINGS,
     RETRIEVAL_RESULTS,
 )
 from src.embeddings import embed_query, embed_texts
@@ -117,14 +118,23 @@ def build_store(ticker: str, chunks: list[DocumentChunk]) -> None:
 
 
 def build_full_store(ticker: str) -> int:
-    """Ingest a ticker's filings and news into its collection.
+    """Ingest a ticker's filings and news into its ChromaDB collection.
 
     Fetches and embeds everything before touching the existing collection, so
-    a failure mid-ingestion leaves the previous store intact. Each source
-    fails independently.
+    a failure mid-ingestion leaves any previous store intact. Filing and news
+    retrieval fail independently.
+
+    A ticker with no retrievable SEC filings is treated as not being a valid
+    research target: AlphaLens scopes to US operating companies that file with
+    EDGAR, and news providers will return loosely-matched articles for strings
+    that are not real tickers. Building a news-only store would present that
+    noise as a knowledge base. Set REQUIRE_FILINGS to False to allow it.
+
+    Args:
+        ticker: The stock ticker symbol.
 
     Returns:
-        The number of chunks stored, or 0 if nothing could be ingested.
+        The number of chunks stored, or 0 if the ticker could not be ingested.
     """
     chunks: list[DocumentChunk] = []
     document_ids: list[str] = []
@@ -137,8 +147,14 @@ def build_full_store(ticker: str) -> int:
             document_ids.append(document.document_id)
             if document.accession_number:
                 accessions.append(document.accession_number)
-    except Exception:  
+    except Exception:
         logger.warning("Filing ingestion failed for %s.", ticker, exc_info=True)
+
+    if REQUIRE_FILINGS and not accessions:
+        logger.error(
+            "No SEC filings retrieved for %s; refusing to build a news-only store.", ticker
+        )
+        return 0
 
     try:
         for document in get_news_documents(ticker):
@@ -153,13 +169,13 @@ def build_full_store(ticker: str) -> int:
         logger.error("No documents could be ingested for %s.", ticker)
         return 0
 
-    # Embed before destroying anything: this is the failure-prone step.
+    # Embed before touching the existing store: this is the failure-prone step.
     vectors = embed_texts([c.text for c in chunks])
 
     name = _collection_name(ticker)
     try:
         _chroma_client.delete_collection(name=name)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001 - absent collection is not an error
         logger.debug("No existing collection to delete for %s: %s", ticker, e)
 
     collection = _chroma_client.get_or_create_collection(name=name)
